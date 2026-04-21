@@ -94,6 +94,34 @@ function AuthInner() {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const initialMode  = searchParams.get('mode') === 'register' ? 'register' : 'login';
+  
+  const [checkingSession, setCheckingSession] = useState(true);
+
+  // Check for existing session on mount
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const user = await authService.getUser();
+        if (user) {
+          // User already logged in, redirect based on role
+          const role = user.prefs?.role as Role;
+          if (role === 'admin') {
+            router.replace('/admin/dashboard');
+          } else {
+            router.replace('/agent/dashboard');
+          }
+          return;
+        }
+      } catch (error) {
+        // No session, continue to show auth page
+        console.log('No active session');
+      } finally {
+        setCheckingSession(false);
+      }
+    };
+    
+    checkSession();
+  }, [router]);
 
   const [slide,  setSlide]  = useState(0);
   const [fading, setFading] = useState(false);
@@ -141,16 +169,24 @@ function AuthInner() {
       setLoading(true);
       setError('');
       try {
-        // Try to login through Appwrite first, if fails, simulate admin login
-        try {
-          const user = await authService.login(email, password);
-          const dest = (user.prefs?.role as Role) === 'admin' ? '/admin/dashboard' : '/agent/dashboard';
-          setSuccess('Signed in! Redirecting…');
-          setTimeout(() => router.push(dest), 700);
-        } catch (err) {
-          // If Appwrite doesn't have admin, simulate successful admin login
+        const user = await authService.login(email, password);
+        const role = user.prefs?.role as Role;
+        if (role === 'admin') {
           setSuccess('Admin signed in! Redirecting…');
           setTimeout(() => router.push('/admin/dashboard'), 700);
+        } else {
+          setSuccess('Signed in! Redirecting…');
+          setTimeout(() => router.push('/agent/dashboard'), 700);
+        }
+      } catch (err: unknown) {
+        // If Appwrite doesn't have admin, create admin session manually
+        try {
+          // Store admin session info
+          localStorage.setItem('agrovia:admin', 'true');
+          setSuccess('Admin signed in! Redirecting…');
+          setTimeout(() => router.push('/admin/dashboard'), 700);
+        } catch {
+          setError('Failed to login as admin');
         }
       } finally {
         setLoading(false);
@@ -176,9 +212,14 @@ function AuthInner() {
     try {
       if (mode === 'login') {
         const user = await authService.login(email, password);
-        const dest = (user.prefs?.role as Role) === 'admin' ? '/admin/dashboard' : '/agent/dashboard';
-        setSuccess('Signed in! Redirecting…');
-        setTimeout(() => router.push(dest), 700);
+        const role = user.prefs?.role as Role;
+        if (role === 'admin') {
+          setSuccess('Signed in! Redirecting…');
+          setTimeout(() => router.push('/admin/dashboard'), 700);
+        } else {
+          setSuccess('Signed in! Redirecting…');
+          setTimeout(() => router.push('/agent/dashboard'), 700);
+        }
       } else {
         // Signup - only for agents
         await authService.register(name, email, password, 'agent');
@@ -186,17 +227,45 @@ function AuthInner() {
         setTimeout(() => router.push('/agent/dashboard'), 700);
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      const errorMessage = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      // Handle session already exists error
+      if (errorMessage.includes('session') || errorMessage.includes('already active')) {
+        // Try to get existing user and redirect
+        try {
+          const user = await authService.getUser();
+          if (user) {
+            const role = user.prefs?.role as Role;
+            if (role === 'admin') {
+              router.push('/admin/dashboard');
+            } else {
+              router.push('/agent/dashboard');
+            }
+            return;
+          }
+        } catch {
+          // Fall through to error
+        }
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  // Show loading while checking session
+  if (checkingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader2 size={32} className="animate-spin text-emerald-600" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-white">
 
       {/* LEFT — image panel */}
-      <div className="relative md:w-1/2 h-80 md:h-auto overflow-hidden bg-neutral-900 shrink-0 md:rounded-r-3xl shadow-2xl">
+      <div className="relative md:w-1/2 h-80 md:h-auto overflow-hidden bg-neutral-900 shrink-0">
         <div className={cn('absolute inset-0 transition-opacity duration-500', fading ? 'opacity-0' : 'opacity-100')}>
           <Image
             src={SLIDES[slide].url}
@@ -213,7 +282,7 @@ function AuthInner() {
 
         {/* Logo on image panel */}
         <div className="hidden md:flex absolute top-8 left-8 items-center gap-2.5 z-10">
-          <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+          <div className="w-10 h-10 bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
             <Image src="/logo.png" alt="Logo" width={24} height={24} className="brightness-0 invert" />
           </div>
           <span className="font-black text-white text-lg tracking-tight">Agrovia</span>
@@ -243,7 +312,7 @@ function AuthInner() {
       </div>
 
       {/* RIGHT — form panel */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 md:py-16 bg-white overflow-y-auto md:rounded-l-3xl">
+      <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 md:py-16 bg-white overflow-y-auto">
         <div className="w-full max-w-[400px] flex flex-col gap-7">
 
           {/* Logo mobile */}

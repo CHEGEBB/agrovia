@@ -3,7 +3,7 @@
 import { Navbar } from '@/components/Navbar';
 import { HeroSlider } from '@/components/HeroSlider';
 import { Footer } from '@/components/Footer';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, Variants } from 'framer-motion';
 import { useRef } from 'react';
 import {
   Activity,
@@ -117,12 +117,20 @@ const TESTIMONIALS = [
   },
 ];
 
-const fadeUp = {
+// Fixed variants with proper typing
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] } },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { 
+      duration: 0.6, 
+      ease: [0.23, 1, 0.32, 1] as const // Added 'as const' to fix the type
+    } 
+  },
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,

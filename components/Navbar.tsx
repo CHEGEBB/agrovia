@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Menu, X, Sprout } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { label: 'Testimonials', href: '#testimonials' },
 ];
 
-const navItemVariants = {
+const navItemVariants: Variants = {
   hidden: { opacity: 0, y: -20 },
   visible: (i: number) => ({
     opacity: 1,
@@ -27,13 +27,13 @@ const navItemVariants = {
   }),
 };
 
-const mobileMenuVariants = {
+const mobileMenuVariants: Variants = {
   hidden: {
     opacity: 0,
     height: 0,
     transition: {
       duration: 0.3,
-      ease: [0.23, 1, 0.32, 1],
+      ease: [0.23, 1, 0.32, 1] as const,
       when: 'afterChildren',
     },
   },
@@ -42,14 +42,14 @@ const mobileMenuVariants = {
     height: 'auto',
     transition: {
       duration: 0.4,
-      ease: [0.23, 1, 0.32, 1],
+      ease: [0.23, 1, 0.32, 1] as const,
       when: 'beforeChildren',
       staggerChildren: 0.05,
     },
   },
 };
 
-const mobileItemVariants = {
+const mobileItemVariants: Variants = {
   hidden: { opacity: 0, x: -20 },
   visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
 };
@@ -91,7 +91,7 @@ export function Navbar() {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+      transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as const }}
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
         scrolled

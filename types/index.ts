@@ -29,6 +29,7 @@ export interface AppwriteUser {
   $id: string;
   name: string;
   email: string;
+  $createdAt?: string;
   prefs: {
     role: Role;
   };
