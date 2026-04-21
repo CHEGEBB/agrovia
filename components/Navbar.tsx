@@ -120,14 +120,14 @@ export function Navbar() {
           ))}
           <div className="h-px bg-neutral-100 my-2" />
           <Link
-            href="/login"
+            href="/auth"
             onClick={() => setOpen(false)}
             className="text-sm font-medium text-neutral-600 py-2.5 px-3 rounded-lg hover:bg-neutral-50 transition-colors"
           >
             Sign In
           </Link>
           <Link
-            href="/register"
+            href="/auth"
             onClick={() => setOpen(false)}
             className="text-sm font-bold text-emerald-600 py-2.5 px-3 rounded-lg hover:bg-emerald-50 transition-colors"
           >

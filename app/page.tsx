@@ -101,7 +101,7 @@ export default function LandingPage() {
               Platform Features
             </p>
             <h2 className="text-3xl md:text-5xl font-black text-neutral-900 leading-tight">
-              Everything your team needs.<br className="hidden md:block" /> Nothing it doesn't.
+              Everything your team needs.<br className="hidden md:block" /> Nothing it doesn&apos;t.
             </h2>
             <p className="mt-4 text-neutral-500 text-base md:text-lg max-w-xl mx-auto">
               Agrovia gives agricultural coordinators and field agents a shared operating picture — from a single seed to a full harvest.
