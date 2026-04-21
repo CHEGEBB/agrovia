@@ -1,0 +1,108 @@
+import type { Field } from '@/types';
+import { computeStatus } from './statusLogic';
+
+const raw: Omit<Field, 'status'>[] = [
+  {
+    id: 'f1',
+    name: 'Nakuru North Block',
+    cropType: 'Maize',
+    location: 'Nakuru, Kenya',
+    plantingDate: '2024-01-15T00:00:00Z',
+    assignedTo: 'agent_001',
+    assignedToName: 'James Odhiambo',
+    currentStage: 'Growing',
+    lastUpdated: '2024-03-10T08:30:00Z',
+    hectares: 12.5,
+    updates: [
+      { id: 'u1a', stage: 'Planted', note: 'Seeds sown across all rows.', updatedAt: '2024-01-15T07:00:00Z', updatedBy: 'agent_001' },
+      { id: 'u1b', stage: 'Growing', note: 'Healthy germination, applied first fertiliser.', updatedAt: '2024-03-10T08:30:00Z', updatedBy: 'agent_001' },
+    ],
+  },
+  {
+    id: 'f2',
+    name: 'Rift Valley Wheat Fields',
+    cropType: 'Wheat',
+    location: 'Eldoret, Kenya',
+    plantingDate: '2023-11-01T00:00:00Z',
+    assignedTo: 'agent_001',
+    assignedToName: 'James Odhiambo',
+    currentStage: 'Harvested',
+    lastUpdated: '2024-02-28T14:00:00Z',
+    hectares: 30,
+    updates: [
+      { id: 'u2a', stage: 'Planted', note: 'Field prepared and seeded.', updatedAt: '2023-11-01T06:00:00Z', updatedBy: 'agent_001' },
+      { id: 'u2b', stage: 'Growing', note: 'Good rainfall this week.', updatedAt: '2023-12-20T09:00:00Z', updatedBy: 'agent_001' },
+      { id: 'u2c', stage: 'Ready', note: 'Grain heads fully formed.', updatedAt: '2024-02-10T10:00:00Z', updatedBy: 'agent_001' },
+      { id: 'u2d', stage: 'Harvested', note: 'Harvest complete. Yield: 4.2 t/ha.', updatedAt: '2024-02-28T14:00:00Z', updatedBy: 'agent_001' },
+    ],
+  },
+  {
+    id: 'f3',
+    name: 'Kisumu Lakeside Plot',
+    cropType: 'Rice',
+    location: 'Kisumu, Kenya',
+    plantingDate: '2024-02-20T00:00:00Z',
+    assignedTo: 'agent_002',
+    assignedToName: 'Aisha Muthoni',
+    currentStage: 'Planted',
+    lastUpdated: '2024-02-20T11:00:00Z',
+    hectares: 8,
+    updates: [
+      { id: 'u3a', stage: 'Planted', note: 'Paddies flooded and seeded.', updatedAt: '2024-02-20T11:00:00Z', updatedBy: 'agent_002' },
+    ],
+  },
+  {
+    id: 'f4',
+    name: 'Meru Highland Terraces',
+    cropType: 'Tea',
+    location: 'Meru, Kenya',
+    plantingDate: '2023-09-05T00:00:00Z',
+    assignedTo: 'agent_002',
+    assignedToName: 'Aisha Muthoni',
+    currentStage: 'Ready',
+    lastUpdated: '2024-03-01T07:45:00Z',
+    hectares: 5.2,
+    updates: [
+      { id: 'u4a', stage: 'Planted', note: 'Seedlings transplanted.', updatedAt: '2023-09-05T08:00:00Z', updatedBy: 'agent_002' },
+      { id: 'u4b', stage: 'Growing', note: 'Steady growth, pruned twice.', updatedAt: '2023-12-10T09:30:00Z', updatedBy: 'agent_002' },
+      { id: 'u4c', stage: 'Ready', note: 'Leaves ready for first flush pick.', updatedAt: '2024-03-01T07:45:00Z', updatedBy: 'agent_002' },
+    ],
+  },
+  {
+    id: 'f5',
+    name: 'Naivasha Flower Greenhouses',
+    cropType: 'Roses',
+    location: 'Naivasha, Kenya',
+    plantingDate: '2024-01-08T00:00:00Z',
+    assignedTo: 'agent_003',
+    assignedToName: 'Brian Kipchoge',
+    currentStage: 'Growing',
+    lastUpdated: '2024-03-12T13:00:00Z',
+    hectares: 3.1,
+    updates: [
+      { id: 'u5a', stage: 'Planted', note: 'Cuttings planted in greenhouse beds.', updatedAt: '2024-01-08T08:00:00Z', updatedBy: 'agent_003' },
+      { id: 'u5b', stage: 'Growing', note: 'Irrigation system calibrated. Growth on track.', updatedAt: '2024-03-12T13:00:00Z', updatedBy: 'agent_003' },
+    ],
+  },
+  {
+    id: 'f6',
+    name: 'Kakamega Forest Edge',
+    cropType: 'Sugarcane',
+    location: 'Kakamega, Kenya',
+    plantingDate: '2023-06-15T00:00:00Z',
+    assignedTo: 'agent_003',
+    assignedToName: 'Brian Kipchoge',
+    currentStage: 'Growing',
+    lastUpdated: '2024-01-05T10:00:00Z',
+    hectares: 22,
+    updates: [
+      { id: 'u6a', stage: 'Planted', note: 'Ratoon crop established.', updatedAt: '2023-06-15T07:00:00Z', updatedBy: 'agent_003' },
+      { id: 'u6b', stage: 'Growing', note: 'Stalks reaching 1.5m height.', updatedAt: '2024-01-05T10:00:00Z', updatedBy: 'agent_003' },
+    ],
+  },
+];
+
+export const fields: Field[] = raw.map((f) => ({
+  ...f,
+  status: computeStatus({ ...f, status: 'Active' }),
+}));
