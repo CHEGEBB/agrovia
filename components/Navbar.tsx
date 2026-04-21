@@ -176,7 +176,7 @@ export function Navbar() {
           <Link
             href="/auth?mode=login"
             className={cn(
-              'text-sm font-semibold px-4 py-2 rounded-lg transition-all duration-200',
+              'text-sm font-semibold px-4 py-2  transition-all duration-200',
               scrolled
                 ? 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
                 : 'text-white/90 hover:text-white hover:bg-white/10'
@@ -186,7 +186,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/auth?mode=register"
-            className="text-sm font-bold px-5 py-2 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 transition-all duration-200 shadow-md shadow-emerald-900/20 hover:shadow-lg hover:scale-105 active:scale-95"
+            className="text-sm font-bold px-5 py-2  bg-emerald-600 text-white hover:bg-emerald-500 transition-all duration-200 shadow-md shadow-emerald-900/20 hover:shadow-lg hover:scale-105 active:scale-95"
           >
             Get Started
           </Link>
