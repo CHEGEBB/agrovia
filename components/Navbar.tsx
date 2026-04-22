@@ -174,7 +174,7 @@ export function Navbar() {
           className="hidden md:flex items-center gap-3"
         >
           <Link
-            href="/auth?mode=login"
+            href="/auth"
             className={cn(
               'text-sm font-semibold px-4 py-2  transition-all duration-200',
               scrolled
@@ -185,7 +185,7 @@ export function Navbar() {
             Sign In
           </Link>
           <Link
-            href="/auth?mode=register"
+            href="/auth"
             className="text-sm font-bold px-5 py-2  bg-emerald-600 text-white hover:bg-emerald-500 transition-all duration-200 shadow-md shadow-emerald-900/20 hover:shadow-lg hover:scale-105 active:scale-95"
           >
             Get Started
@@ -274,7 +274,7 @@ export function Navbar() {
               />
               <motion.div variants={mobileItemVariants}>
                 <Link
-                  href="/auth?mode=login"
+                  href="/auth"
                   onClick={() => setOpen(false)}
                   className="text-sm font-medium text-neutral-600 py-2.5 px-3 rounded-lg hover:bg-neutral-50 transition-colors block"
                 >
@@ -283,7 +283,7 @@ export function Navbar() {
               </motion.div>
               <motion.div variants={mobileItemVariants}>
                 <Link
-                  href="/auth?mode=register"
+                  href="/auth"
                   onClick={() => setOpen(false)}
                   className="text-sm font-bold text-emerald-600 py-2.5 px-3 rounded-lg hover:bg-emerald-50 transition-colors block"
                 >

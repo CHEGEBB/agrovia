@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { authService } from '@/services/authService';
@@ -14,19 +15,21 @@ export function useAuth() {
   const [state, setState] = useState<AuthState>({ user: null, loading: true, role: null });
 
   const refresh = useCallback(async () => {
+    setState((s) => ({ ...s, loading: true }));
     const user = await authService.getUser();
     setState({ user, loading: false, role: (user?.prefs?.role as Role) ?? null });
   }, []);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => { refresh(); }, []);
 
   const login = async (email: string, password: string) => {
     const user = await authService.login(email, password);
-    setState({ user, loading: false, role: user.prefs?.role ?? null });
+    const role = (user?.prefs?.role as Role) ?? 'agent';
+    setState({ user, loading: false, role });
     return user;
   };
 
-  const register = async (name: string, email: string, password: string, role: Role) => {
+  const register = async (name: string, email: string, password: string, role: Role = 'agent') => {
     const user = await authService.register(name, email, password, role);
     setState({ user, loading: false, role });
     return user;

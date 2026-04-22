@@ -8,19 +8,19 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function AgentLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, role } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push('/auth?mode=login');
-      } else if (role === 'admin') {
-        router.push('/admin/dashboard');
-      }
+    // Don't do anything until Appwrite has responded
+    if (loading) return;
+    // Only redirect if confirmed no user
+    if (!user) {
+      router.replace('/auth');
     }
-  }, [user, loading, role, router]);
+  }, [user, loading, router]);
 
+  // Still loading — show spinner, render nothing else
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -29,9 +29,8 @@ export default function AgentLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!user || role !== 'agent') {
-    return null;
-  }
+  // No user confirmed — render nothing while redirect happens
+  if (!user) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-neutral-50">

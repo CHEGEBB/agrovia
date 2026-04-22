@@ -3,25 +3,25 @@
 
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminMobileTopbar } from '@/components/AdminMobileTopbar';
-import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, role } = useAuth();
   const router = useRouter();
+  const [checking, setChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push('/auth?mode=login');
-      } else if (role === 'agent') {
-        router.push('/agent/dashboard');
-      }
+    // Admin is hardcoded — never touch Appwrite
+    if (localStorage.getItem('agrovia:admin') === 'true') {
+      setIsAdmin(true);
+    } else {
+      router.replace('/admin/auth');
     }
-  }, [user, loading, role, router]);
+    setChecking(false);
+  }, [router]);
 
-  if (loading) {
+  if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
@@ -29,9 +29,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!user || role !== 'admin') {
-    return null;
-  }
+  if (!isAdmin) return null;
 
   return (
     <div className="flex h-screen overflow-hidden bg-neutral-50">

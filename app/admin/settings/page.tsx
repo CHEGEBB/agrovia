@@ -1,26 +1,34 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 // app/admin/settings/page.tsx
 'use client';
 
-import { useState } from 'react';
-import { Shield, User, LogOut, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useState, useEffect } from 'react';
+import { Shield, User, LogOut, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+
+const ADMIN_EMAIL = 'admin@agrovia.com';
 
 export default function AdminSettingsPage() {
-  const { user, logout } = useAuth();
   const router = useRouter();
   const [logoutConfirm, setLogoutConfirm] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/auth?mode=login');
+  useEffect(() => {
+    // Read from localStorage — no Appwrite
+    const stored = localStorage.getItem('agrovia:adminEmail') ?? ADMIN_EMAIL;
+    setAdminEmail(stored);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('agrovia:admin');
+    localStorage.removeItem('agrovia:adminEmail');
+    router.replace('/admin-auth');
   };
 
   return (
     <div className="space-y-6 pb-12 max-w-xl">
 
-      {/* ── Header ──────────────────────────────────────────────────────── */}
+      {/* Header */}
       <div>
         <div className="flex items-center gap-2 mb-1">
           <Shield size={14} className="text-emerald-600" />
@@ -30,7 +38,7 @@ export default function AdminSettingsPage() {
         <p className="text-sm text-neutral-400 mt-1">Manage your admin account</p>
       </div>
 
-      {/* ── Profile card ─────────────────────────────────────────────── */}
+      {/* Profile card */}
       <div className="bg-white border border-neutral-200 p-5">
         <div className="flex items-center gap-2 mb-4">
           <User size={15} className="text-neutral-500" />
@@ -39,16 +47,14 @@ export default function AdminSettingsPage() {
 
         <div className="flex items-center gap-4 mb-5">
           <div className="w-14 h-14 bg-emerald-100 flex items-center justify-center rounded-sm relative">
-            <span className="text-xl font-black text-emerald-700">
-              {user?.name?.charAt(0)?.toUpperCase() ?? 'A'}
-            </span>
+            <span className="text-xl font-black text-emerald-700">A</span>
             <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-emerald-600 rounded-full flex items-center justify-center">
               <Shield size={10} className="text-white" />
             </span>
           </div>
           <div>
-            <p className="font-black text-neutral-900 text-lg">{user?.name ?? 'Admin'}</p>
-            <p className="text-sm text-neutral-400">{user?.email ?? ''}</p>
+            <p className="font-black text-neutral-900 text-lg">Admin</p>
+            <p className="text-sm text-neutral-400">{adminEmail}</p>
             <span className="inline-flex mt-1 text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase tracking-wide">
               Administrator
             </span>
@@ -57,10 +63,10 @@ export default function AdminSettingsPage() {
 
         <div className="grid grid-cols-2 gap-3">
           {[
-            { label: 'Name',  value: user?.name  ?? '—' },
-            { label: 'Email', value: user?.email ?? '—' },
+            { label: 'Name',  value: 'Admin' },
+            { label: 'Email', value: adminEmail },
             { label: 'Role',  value: 'Admin / Coordinator' },
-            { label: 'User ID', value: user?.$id?.slice(0, 12) + '…' ?? '—' },
+            { label: 'Auth',  value: 'Hardcoded' },
           ].map(({ label, value }) => (
             <div key={label} className="bg-neutral-50 p-3 rounded-sm">
               <p className="text-[10px] font-semibold text-neutral-400 uppercase tracking-wide mb-0.5">{label}</p>
@@ -68,13 +74,9 @@ export default function AdminSettingsPage() {
             </div>
           ))}
         </div>
-
-        <p className="text-xs text-neutral-400 mt-4">
-          To change your name or password, use the Appwrite Console directly or your authentication provider.
-        </p>
       </div>
 
-      {/* ── Danger zone ─────────────────────────────────────────────── */}
+      {/* Danger zone */}
       <div className="bg-white border border-red-100 p-5">
         <div className="flex items-center gap-2 mb-4">
           <AlertTriangle size={15} className="text-red-500" />
@@ -83,7 +85,7 @@ export default function AdminSettingsPage() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold text-neutral-800">Sign out</p>
-            <p className="text-xs text-neutral-400 mt-0.5">You will be redirected to the login page.</p>
+            <p className="text-xs text-neutral-400 mt-0.5">You will be redirected to the admin login page.</p>
           </div>
           {logoutConfirm ? (
             <div className="flex items-center gap-2 shrink-0">
@@ -111,7 +113,7 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      {/* ── System info ─────────────────────────────────────────────── */}
+      {/* System info */}
       <div className="bg-neutral-50 border border-neutral-200 p-5">
         <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-3">System</p>
         <div className="space-y-2">

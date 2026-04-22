@@ -396,14 +396,14 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="/auth?mode=register"
+                href="/auth"
                 className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-emerald-600 hover:bg-emerald-50 text-sm font-bold transition-all"
               >
                 Start Free
                 <ArrowRight size={16} />
               </a>
               <a
-                href="/auth?mode=login"
+                href="/auth"
                 className="px-8 py-3.5 border border-white/30 hover:bg-white/10 text-white text-sm font-semibold transition-all"
               >
                 Sign In
