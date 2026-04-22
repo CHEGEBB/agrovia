@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const SLIDES = [
   {
@@ -45,7 +45,6 @@ export function HeroSlider() {
 
   const goTo = useCallback((index: number) => {
     if (index === active) return;
-    // Start zoom out animation on current image
     setIsZooming(true);
     setTimeout(() => {
       setVisible(false);
@@ -66,7 +65,8 @@ export function HeroSlider() {
 
   return (
     <section className="relative h-[100svh] min-h-[600px] max-h-[960px] overflow-hidden bg-neutral-900">
-      {/* Background images — crossfade with zoom effect */}
+
+      {/* Background images */}
       {SLIDES.map((s, i) => (
         <div
           key={i}
@@ -78,13 +78,8 @@ export function HeroSlider() {
         >
           <motion.div
             className="relative w-full h-full"
-            animate={{
-              scale: i === active && isZooming ? 1.15 : 1.05,
-            }}
-            transition={{
-              duration: 0.8,
-              ease: "easeOut",
-            }}
+            animate={{ scale: i === active && isZooming ? 1.15 : 1.05 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
             <Image
               src={s.url}
@@ -99,7 +94,18 @@ export function HeroSlider() {
         </div>
       ))}
 
-      {/* Content - better text positioning for larger screens */}
+      {/* Thin emerald progress bar at top */}
+      <div className="absolute top-0 left-0 right-0 z-20 h-[3px] bg-white/10">
+        <motion.div
+          key={active}
+          className="h-full bg-emerald-400"
+          initial={{ width: '0%' }}
+          animate={{ width: '100%' }}
+          transition={{ duration: 5, ease: 'linear' }}
+        />
+      </div>
+
+      {/* Content */}
       <div className="relative z-10 h-full flex flex-col justify-center md:justify-end pb-16 sm:pb-20 px-5 sm:px-10 md:px-16 lg:px-24">
         <div
           className={cn(
@@ -107,26 +113,33 @@ export function HeroSlider() {
             visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
           )}
         >
-          <p className="text-emerald-400 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em] mb-3 sm:mb-4">
-            Agrovia · {SLIDES[active].tag}
-          </p>
-          <h1 className="text-[clamp(2rem,8vw,5rem)] lg:text-[clamp(3rem,6vw,5.5rem)] font-black text-white leading-[1.1] whitespace-pre-line mb-4 sm:mb-5 drop-shadow-lg">
+          {/* Tag pill */}
+          <div className="inline-flex items-center gap-2 mb-4">
+            <span className="w-4 h-[2px] bg-emerald-400" />
+            <p className="text-emerald-400 text-[11px] sm:text-xs font-bold uppercase tracking-[0.3em]">
+              Agrovia · {SLIDES[active].tag}
+            </p>
+          </div>
+
+          <h1 className="text-[clamp(2rem,8vw,5rem)] lg:text-[clamp(3rem,6vw,5.5rem)] font-black text-white leading-[1.08] whitespace-pre-line mb-4 sm:mb-5 drop-shadow-lg">
             {SLIDES[active].headline}
           </h1>
-          <p className="text-neutral-200 text-[clamp(0.875rem,1.8vw,1.2rem)] max-w-lg lg:max-w-xl leading-relaxed mb-7 sm:mb-9">
+
+          <p className="text-neutral-300 text-[clamp(0.875rem,1.8vw,1.1rem)] max-w-lg lg:max-w-xl leading-relaxed mb-8 sm:mb-10">
             {SLIDES[active].sub}
           </p>
+
           <div className="flex flex-wrap gap-3">
             <a
-              href="/register"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold  transition-all shadow-lg shadow-emerald-900/40 hover:shadow-emerald-900/60 hover:-translate-y-0.5"
+              href="/auth?mode=register"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold transition-all duration-150 shadow-lg shadow-emerald-900/40 hover:shadow-emerald-900/60 hover:-translate-y-0.5 active:scale-[0.98]"
             >
               Get Started
               <ArrowRight size={15} />
             </a>
             <a
-              href="/login"
-              className="inline-flex items-center px-6 py-3 bg-white backdrop-blur-sm border border-white/25 hover:bg-white/20 text-emerald-600 text-sm font-semibold  transition-all hover:-translate-y-0.5"
+              href="/auth"
+              className="inline-flex items-center px-7 py-3.5 bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 text-white text-sm font-semibold transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.98]"
             >
               Sign In
             </a>
@@ -134,7 +147,7 @@ export function HeroSlider() {
         </div>
       </div>
 
-      {/* Slide indicator dots */}
+      {/* Slide indicator dots — bottom right */}
       <div className="absolute bottom-7 right-6 sm:right-10 md:right-16 z-10 flex items-center gap-2">
         {SLIDES.map((_, i) => (
           <button
@@ -143,20 +156,20 @@ export function HeroSlider() {
             aria-label={`Go to slide ${i + 1}`}
             className={cn(
               'rounded-full transition-all duration-300 focus:outline-none',
-              i === active
-                ? 'w-7 h-2 bg-emerald-400'
-                : 'w-2 h-2 bg-white/35 hover:bg-white/60'
+              i === active ? 'w-7 h-2 bg-emerald-400' : 'w-2 h-2 bg-white/35 hover:bg-white/60'
             )}
           />
         ))}
       </div>
 
-      {/* Slide counter */}
-      <div className="absolute bottom-8 left-5 sm:left-10 md:left-16 z-10">
-        <p className="text-white/40 text-xs font-medium tabular-nums">
+      {/* Slide counter — bottom left */}
+      <div className="absolute bottom-8 left-5 sm:left-10 md:left-16 z-10 flex items-center gap-2">
+        <span className="w-6 h-[1px] bg-white/30" />
+        <p className="text-white/40 text-xs font-medium tabular-nums tracking-wider">
           {String(active + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
         </p>
       </div>
+
     </section>
   );
 }
