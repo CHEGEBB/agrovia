@@ -1,19 +1,21 @@
-# Agrovia — Field Monitoring System
+# Agrovia — SmartSeason Field Monitoring System
 
-> A sleek, responsive crop field monitoring platform built with Next.js 15, Appwrite Auth, and a static-data approach that looks and feels like a full backend system.
+> A responsive, full-featured crop field monitoring platform built with Next.js 15 and Appwrite, implementing all core requirements of the SmartSeason Field Monitoring System assessment.
 
 ---
 
 ## Live Demo
 
-> _Link added after deployment_
+**[https://agrovia-five.vercel.app/](https://agrovia-five.vercel.app/)**
 
-**Demo credentials**
+### Demo Credentials
 
 | Role | Email | Password |
 |---|---|---|
-| Admin / Coordinator | admin@agrovia.app | Agrovia2026! |
-| Field Agent | agent@agrovia.app | Agrovia2026! |
+| Admin / Coordinator | admin@agrovia.com | admin@1234 |
+| Field Agent | johndoe@agrovia.com | Johndoe@1234 |
+
+> Both accounts are pre-seeded. Log in with either to explore the respective dashboard.
 
 ---
 
@@ -21,23 +23,22 @@
 
 | Layer | Choice | Reason |
 |---|---|---|
-| Framework | Next.js 15 (App Router) | Latest stable, no CVEs on current LTS image |
-| Language | TypeScript | Type safety across components and data models |
-| Auth | Appwrite (BaaS) | Fast setup, free tier, no backend to maintain |
-| Styling | Tailwind CSS v4 | Utility-first, minimal bundle |
-| Animations | Framer Motion | Polished entrance/exit animations |
-| State | Zustand | Lightweight, no boilerplate |
-| Images | Unsplash API | Free high-quality field/crop hero images |
-| Deploy | Vercel | Zero-config Next.js deployment |
+| Framework | Next.js 15 (App Router) | Production-grade React framework with server components and file-based routing |
+| Language | TypeScript | End-to-end type safety across data models, hooks, and components |
+| Auth & Users | Appwrite (BaaS) | Handles sessions, user creation, and role storage — no custom auth backend needed |
+| Styling | Tailwind CSS v4 | Utility-first, minimal bundle, consistent design tokens |
+| Animations | Framer Motion | Entrance animations, scroll-triggered reveals, and page transitions |
+| State | Zustand | Lightweight client state for field data — no boilerplate |
+| Deploy | Vercel | Zero-config Next.js deployment with environment variable support |
 
 ---
 
 ## Setup Instructions
 
-### 1. Clone the repo
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/agrovia.git
+git clone https://github.com/CHEGEBB/agrovia.git
 cd agrovia
 ```
 
@@ -47,45 +48,31 @@ cd agrovia
 npm install
 ```
 
-### 3. Set up Appwrite
-
-1. Go to [cloud.appwrite.io](https://cloud.appwrite.io) and create a project
-2. Enable **Email/Password** authentication under Auth → Settings
-3. Copy your **Project ID** and **API Endpoint**
-
-### 4. Environment variables
+### 3. Environment variables
 
 Create `.env.local` in the project root:
 
 ```env
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
-NEXT_PUBLIC_APPWRITE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_UNSPLASH_ACCESS_KEY=your_unsplash_key
+NEXT_PUBLIC_APPWRITE_ENDPOINT=https://fra.cloud.appwrite.io/v1
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=agrovia
+NEXT_PUBLIC_APPWRITE_DATABASE_ID=agrovia
 ```
 
-### 5. Seed demo accounts
-
-```bash
-npm run seed
-```
-
-This creates the two demo accounts listed above.
-
-### 6. Run locally
+### 4. Run locally
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000) and log in with the demo credentials above.
 
-### 7. Deploy to Vercel
+### 5. Deploy to Vercel
 
 ```bash
 npx vercel --prod
 ```
 
-Add the same env variables in the Vercel dashboard under Settings → Environment Variables.
+Add the same environment variables under **Settings → Environment Variables** in your Vercel project dashboard.
 
 ---
 
@@ -94,48 +81,36 @@ Add the same env variables in the Vercel dashboard under Settings → Environmen
 ```
 agrovia/
 ├── app/
-│   ├── (auth)/               # Auth route group (no sidebar layout)
-│   │   ├── login/page.tsx
-│   │   └── register/page.tsx
-│   ├── (dashboard)/          # Protected layout with sidebar
-│   │   ├── layout.tsx        # Sidebar + topbar wrapper
-│   │   ├── dashboard/page.tsx
-│   │   ├── fields/page.tsx
-│   │   ├── fields/[id]/page.tsx
-│   │   ├── agents/page.tsx   # Admin only
-│   │   └── settings/page.tsx
-│   ├── page.tsx              # Landing page
+│   ├── auth/                 # Unified auth page (login + agent register)
+│   ├── admin/                # Admin-only routes (dashboard, agents, fields, settings)
+│   ├── agent/                # Agent routes (dashboard, fields, settings)
+│   ├── page.tsx              # Public landing page
 │   └── layout.tsx            # Root layout (fonts, providers)
 │
-├── components/               # Flat — everything in one folder
-│   ├── Navbar.tsx            # Landing page navbar
+├── components/
+│   ├── Navbar.tsx            # Landing page navigation
+│   ├── HeroSlider.tsx        # Animated full-screen hero with slide transitions
 │   ├── Footer.tsx
-│   ├── Sidebar.tsx           # Collapsible sidebar, responsive
-│   ├── FieldCard.tsx         # Card view of a single field
-│   ├── StatusBadge.tsx       # Active / At Risk / Completed pill
-│   ├── StatsWidget.tsx       # Dashboard stat card
-│   ├── FieldTable.tsx        # Table view with sorting/filters
-│   ├── UpdateModal.tsx       # Stage update + notes modal
-│   ├── HeroSlider.tsx        # Animated hero with Unsplash images
-│   ├── AuthForm.tsx          # Shared login/register form
-│   ├── RolePicker.tsx        # Role selection pill (Admin / Agent)
-│   └── MobileNav.tsx         # Bottom nav for mobile
+│   ├── AdminSidebar.tsx      # Collapsible sidebar for admin routes
+│   ├── Sidebar.tsx           # Collapsible sidebar with field submenu for agents
+│   ├── FieldCard.tsx
+│   ├── StatusBadge.tsx
+│   └── UpdateModal.tsx
 │
 ├── hooks/
-│   ├── useAuth.ts            # Appwrite session + user role
-│   ├── useFields.ts          # Fields data + local update helpers
-│   └── useSidebar.ts         # Open/close + persist state
+│   ├── useAuth.ts            # Appwrite session, user object, role from DB
+│   └── useFields.ts          # Fields data + update helpers
 │
 ├── lib/
-│   ├── appwrite.ts           # Appwrite client singleton
-│   ├── data.ts               # Static mock fields data
-│   ├── utils.ts              # cn(), formatDate(), etc.
-│   └── statusLogic.ts        # Pure status computation function
+│   ├── appwrite.ts           # Appwrite client — account + databases instances
+│   ├── data.ts               # Typed static field records (mock data)
+│   └── utils.ts              # cn(), formatDate(), helpers
 │
-├── types/
-│   └── index.ts              # Field, User, Stage, Status types
+├── services/
+│   └── authService.ts        # login(), register(), logout(), getUser() — reads role from Appwrite DB
 │
-└── middleware.ts             # Redirect unauthenticated users
+└── types/
+    └── index.ts              # Field, AppwriteUser, Role, Stage, Status types
 ```
 
 ---
@@ -143,100 +118,79 @@ agrovia/
 ## Pages
 
 ### Landing (`/`)
-- Animated navbar with logo + CTA buttons
-- **Hero section** — full-screen slider with 5 Unsplash farm/crop images, auto-advances every 4s, cross-fade transition, headline overlaid
-- **Features section** — 3-column cards with icons
-- **How it works** — numbered steps with alternating image layout
-- **Stats section** — animated counters (fields monitored, agents, harvests tracked)
-- **CTA section** — sign up prompt with background crop image
-- Footer with links
+Full-screen hero slider, features grid, how-it-works steps, stats section, testimonials, and CTA — all with scroll-triggered Framer Motion animations.
 
-### Auth (`/login`, `/register`)
-- Split layout: left panel with a crop photo from Unsplash, right panel with form
-- **RolePicker** component — two large pills: "Admin / Coordinator" and "Field Agent" — user taps to choose before signing up
-- Role stored in Appwrite user preferences on register
-- Smooth form transitions with Framer Motion
+### Auth (`/auth`)
+Split-panel layout. A single form handles both agent sign-up and login for all roles. After login, the user's role is read from the `users` collection and they are redirected to the correct dashboard automatically — admins to `/admin/dashboard`, agents to `/agent/dashboard`.
 
-### Dashboard (`/dashboard`)
-- Admin sees: total fields, fields by stage (donut-style breakdown), at-risk count, all recent updates across agents
-- Agent sees: their assigned fields only, same breakdown limited to their fields
-- Activity feed showing last 10 stage updates
-- Quick-action button to update a field stage
+### Admin Dashboard (`/admin/dashboard`)
+Overview of all fields across all agents — total count, stage breakdown, at-risk count, and a live activity feed of recent updates.
+
+### Agent Dashboard (`/agent/dashboard`)
+Scoped to the logged-in agent's assigned fields only — same structure as admin but filtered by `assignedTo`.
 
 ### Fields (`/fields`)
-- Toggle between card grid and table view
-- Filter bar: by stage, by status, by agent (admin only)
-- Search by field name or crop type
-- Each card shows: field name, crop, stage badge, status badge, last updated
+Card and table view toggle, filter by stage/status, search by name or crop type.
 
 ### Field Detail (`/fields/[id]`)
-- Header with field name, crop type, planting date
-- Current stage with visual progress bar (Planted → Growing → Ready → Harvested)
-- Status badge (Active / At Risk / Completed) with explanation tooltip
-- Notes history — chronological list of observations
-- "Update Stage / Add Note" button → opens UpdateModal
+Current stage with progress bar, status badge with explanation, full notes history, and an "Update Stage / Add Note" modal.
 
-### Agents (`/agents`) — Admin only
-- Grid of agent cards showing name, email, number of assigned fields
-- Click an agent to see their fields
-- Assign/unassign fields (updates local state, no backend needed)
+### Agents (`/admin/agents`) — Admin only
+Agent cards showing assigned field count. Click-through to view an agent's fields.
 
 ### Settings (`/settings`)
-- Profile info (display name, email — from Appwrite)
-- Role shown (read-only)
-- Logout button
+Profile display (name, email from Appwrite), role label, logout.
 
 ---
 
 ## Field Status Logic
 
-Status is computed by `lib/statusLogic.ts` — a pure function with no side effects:
+Computed by a pure function in `lib/statusLogic.ts` — no side effects, fully unit-testable:
 
 ```ts
-computeStatus(field: Field): Status
+computeStatus(field: Field): 'Active' | 'At Risk' | 'Completed'
 ```
 
 Rules applied in order:
 
-1. **Completed** — if `stage === 'Harvested'`
-2. **At Risk** — if `stage === 'Growing'` and `daysSincePlanting > 90`, or if `daysSinceLastUpdate > 30` (field has been neglected)
-3. **Active** — everything else (Planted, Growing within normal window, or Ready)
+1. **Completed** — `stage === 'Harvested'`
+2. **At Risk** — `stage === 'Ready'` (overdue for harvest), OR `stage === 'Growing'` and `daysSincePlanting > 90` (beyond typical growing window), OR `daysSinceLastUpdate > 14` (field has been neglected by agent)
+3. **Active** — all other cases
 
-This is intentionally simple and easy to extend. The logic is isolated in one file so it can be unit tested or swapped without touching UI code.
+The logic is isolated in one file so it is easy to adjust thresholds or add new rules without touching any UI component.
 
 ---
 
 ## Design Decisions
 
-**Static data with dynamic feel** — all field data lives in `lib/data.ts` as a typed array. Zustand stores it in memory and all CRUD operations mutate local state only. The UI feels fully interactive (updates persist within a session, modals work, filters work) without needing a database.
+**Appwrite for authentication and user roles** — The assessment required auth with two distinct roles but did not specify a backend language. Appwrite is a BaaS (Backend-as-a-Service) that provides a production-ready auth system, session management, and a database — all without maintaining a custom server. This was the most practical choice given the timeline: it let me focus on the field management logic and UI rather than building auth infrastructure from scratch. Appwrite stores each user's role (`admin` or `agent`) in a `users` collection, which is queried on every login to determine routing.
 
-**Appwrite for auth only** — using a BaaS just for authentication keeps the project simple and honest. Appwrite handles sessions, tokens, and user preferences (role) — we don't need to build any of that.
+**Static field data with dynamic feel** — All field records live in `lib/data.ts` as a typed array. Zustand holds them in memory and all updates (stage changes, notes) mutate local state only. The UI behaves as a fully interactive system within a session — modals, filters, stage transitions, and at-risk calculations all work — without requiring a database write layer. This is an honest trade-off for a timed assessment.
 
-**Flat component folder** — no `components/dashboard/`, `components/fields/` sub-folders. At this project size, one flat folder is faster to navigate and avoids over-architecture.
+**Single auth page for all roles** — Rather than separate `/login` and `/admin-auth` routes, one page serves everyone. After authentication, the app reads the user's role and redirects accordingly. This is simpler, less error-prone, and more realistic — it mirrors how most production SaaS apps handle multi-role auth.
 
-**One layout controller** — the `(dashboard)/layout.tsx` file owns the sidebar and topbar. The `useSidebar` hook handles collapse state and persists it to `localStorage`. On mobile (<768px), the sidebar becomes a bottom nav sheet instead of a side panel.
+**Role stored in Appwrite database, not just preferences** — User roles are saved to a `users` collection (not just Appwrite account preferences) so that role lookups are consistent, queryable, and easy to update manually in the Appwrite console without touching code.
 
-**Emerald green + white theme** — `#059669` (Tailwind `emerald-600`) is the primary color. Used for badges, buttons, active nav items, and the status indicators. White backgrounds keep it clean and professional.
-
-**Unsplash for images** — hero slider and auth page background pull from the Unsplash API using the `crop`, `field`, `agriculture` queries. Images are requested at the right size to avoid layout shift.
+**Flat component structure** — No deeply nested `components/dashboard/fields/` folders. At this project scale, a flat `components/` directory is faster to navigate and avoids premature architecture. Components are named clearly enough to find without folder hierarchy.
 
 ---
 
 ## Assumptions
 
-- Fields data does not need to persist across browser sessions (in-memory state is acceptable for assessment purposes)
-- Role is set at register time and does not change — no role management UI needed
-- Admin can see all fields; Field Agent can only see fields assigned to them (simulated via `data.ts` `assignedTo` field matching the logged-in user's ID)
-- "At Risk" threshold of 30 days without update is a reasonable default for most crop types
-- No real file uploads — notes are text only
+- Field data does not need to persist across browser sessions (in-memory state is acceptable for this assessment)
+- Role is assigned at registration and only changes via the Appwrite console (no in-app role management UI required)
+- Admin can see all fields; agents see only fields where `assignedTo` matches their user ID
+- "At Risk" threshold of 14 days without an update is a reasonable default for most crop types in active seasons
+- Notes are text-only — no file/image uploads required
 
 ---
 
-## What I'd add with more time
+## What I Would Add With More Time
 
-- PostgreSQL backend with Prisma ORM for real persistence
-- Field assignment workflow (admin drags fields to agents)
-- CSV export for field reports
-- Push notifications when a field becomes At Risk
-- Map view with field GPS coordinates (Mapbox)
-- Image upload for field observations
+- PostgreSQL backend with Prisma ORM for real data persistence across sessions
+- Field assignment drag-and-drop UI (admin assigns fields to agents visually)
+- CSV/PDF export for field reports and season summaries
+- Push notifications when a field transitions to At Risk
+- Mapbox map view showing all fields with GPS coordinates
+- Unit tests for `computeStatus()` and the auth service layer
+- Image upload support for field observation notes
