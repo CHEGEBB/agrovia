@@ -50,7 +50,7 @@ const daysAgo = (n: number) => {
 const initialFields: Field[] = [
   {
     id: '1',
-    name: 'North Block',
+    name: 'Ol Kalou Block A',
     crop: 'Maize',
     plantingDate: daysAgo(45),
     stage: 'Growing',
@@ -66,7 +66,7 @@ const initialFields: Field[] = [
   },
   {
     id: '2',
-    name: 'East Valley',
+    name: 'Ol Kalou Block B',
     crop: 'Wheat',
     plantingDate: daysAgo(110),
     stage: 'Ready',
@@ -80,7 +80,7 @@ const initialFields: Field[] = [
   },
   {
     id: '3',
-    name: 'South Farm',
+    name: 'Mwea Section 3',
     crop: 'Soybeans',
     plantingDate: daysAgo(95),
     stage: 'Growing',
@@ -95,7 +95,7 @@ const initialFields: Field[] = [
   },
   {
     id: '4',
-    name: 'West Plains',
+    name: 'Mwea Section 4',
     crop: 'Maize',
     plantingDate: daysAgo(180),
     stage: 'Harvested',
@@ -109,7 +109,7 @@ const initialFields: Field[] = [
   },
   {
     id: '5',
-    name: 'Hilltop Ridge',
+    name: 'Kinangop Upper',
     crop: 'Sorghum',
     plantingDate: daysAgo(12),
     stage: 'Planted',
@@ -123,7 +123,7 @@ const initialFields: Field[] = [
   },
   {
     id: '6',
-    name: 'River Bend',
+    name: 'Kinangop Lower',
     crop: 'Sunflower',
     plantingDate: daysAgo(70),
     stage: 'Growing',
@@ -137,7 +137,7 @@ const initialFields: Field[] = [
   },
   {
     id: '7',
-    name: 'Central Plot',
+    name: 'Njabini Plot 1',
     crop: 'Cassava',
     plantingDate: daysAgo(200),
     stage: 'Harvested',
@@ -151,7 +151,7 @@ const initialFields: Field[] = [
   },
   {
     id: '8',
-    name: 'Lower Fields',
+    name: 'Njabini Plot 2',
     crop: 'Beans',
     plantingDate: daysAgo(55),
     stage: 'Ready',
