@@ -103,23 +103,24 @@ function AuthInner() {
     setLoading(true);
 
     try {
+      // Always kill any existing session first so there's no stale agent/admin conflict
+      try { await authService.logout(); } catch (_) { /* no session to clear, that's fine */ }
+
       if (mode === 'login') {
         const user = await authService.login(email, password);
         const role = user?.prefs?.role ?? 'agent';
+        const destination = role === 'admin' ? '/admin/dashboard' : '/agent/dashboard';
         setSuccess(role === 'admin' ? 'Welcome, Admin! Redirecting…' : 'Signed in! Redirecting…');
-        setTimeout(() => {
-          router.push(role === 'admin' ? '/admin/dashboard' : '/agent/dashboard');
-        }, 700);
+        // Use replace so the auth page is not in browser history, and go immediately
+        router.replace(destination);
       } else {
-        // Register always creates an agent
         await authService.register(name, email, password, 'agent');
         setSuccess('Account created! Redirecting…');
-        setTimeout(() => router.push('/agent/dashboard'), 700);
+        router.replace('/agent/dashboard');
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
+      setLoading(false); // only reset loading on error — on success we're navigating away
     }
   };
 
@@ -235,7 +236,7 @@ function AuthInner() {
             </button>
           </p>
 
-          {/* Admin note — no separate page, just use this form */}
+          {/* Admin note */}
           <div className="flex items-start gap-2.5 bg-neutral-50 border border-neutral-200 px-4 py-3">
             <ShieldCheck size={14} className="text-neutral-400 mt-0.5 shrink-0" />
             <p className="text-[11px] text-neutral-400 leading-snug">
