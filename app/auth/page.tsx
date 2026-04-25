@@ -30,7 +30,7 @@ const SLIDES = [
   },
 ];
 
-function Field({
+function FormField({
   label, type, value, onChange, placeholder, showPass, onTogglePass,
 }: {
   label: string; type: string; value: string;
@@ -103,16 +103,11 @@ function AuthInner() {
     setLoading(true);
 
     try {
-      // Always kill any existing session first so there's no stale agent/admin conflict
-      try { await authService.logout(); } catch (_) { /* no session to clear, that's fine */ }
-
       if (mode === 'login') {
         const user = await authService.login(email, password);
         const role = user?.prefs?.role ?? 'agent';
-        const destination = role === 'admin' ? '/admin/dashboard' : '/agent/dashboard';
         setSuccess(role === 'admin' ? 'Welcome, Admin! Redirecting…' : 'Signed in! Redirecting…');
-        // Use replace so the auth page is not in browser history, and go immediately
-        router.replace(destination);
+        router.replace(role === 'admin' ? '/admin/dashboard' : '/agent/dashboard');
       } else {
         await authService.register(name, email, password, 'agent');
         setSuccess('Account created! Redirecting…');
@@ -120,7 +115,7 @@ function AuthInner() {
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
-      setLoading(false); // only reset loading on error — on success we're navigating away
+      setLoading(false);
     }
   };
 
@@ -162,7 +157,6 @@ function AuthInner() {
       <div className="flex-1 flex flex-col justify-center items-center px-6 py-10 md:py-16 bg-white overflow-y-auto">
         <div className="w-full max-w-[400px] flex flex-col gap-7">
 
-          {/* Mobile logo */}
           <div className="flex md:hidden items-center justify-center gap-2 mb-2">
             <Image src="/logo.png" alt="Logo" width={32} height={32} />
             <span className="font-black text-neutral-900 text-lg tracking-tight">Agrovia</span>
@@ -179,7 +173,6 @@ function AuthInner() {
             </p>
           </div>
 
-          {/* Mode tabs */}
           <div className="flex bg-neutral-100 p-1 gap-1">
             {(['login', 'register'] as const).map((m) => (
               <button key={m} type="button" onClick={() => switchMode(m)}
@@ -192,10 +185,10 @@ function AuthInner() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {mode === 'register' && (
-              <Field label="Full Name" type="text" value={name} onChange={setName} placeholder="Brian Mwangi" />
+              <FormField label="Full Name" type="text" value={name} onChange={setName} placeholder="Brian Mwangi" />
             )}
-            <Field label="Email Address" type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
-            <Field label="Password" type="password" value={password} onChange={setPassword}
+            <FormField label="Email Address" type="email" value={email} onChange={setEmail} placeholder="you@example.com" />
+            <FormField label="Password" type="password" value={password} onChange={setPassword}
               placeholder="••••••••" showPass={showPass} onTogglePass={() => setShowPass((s) => !s)} />
 
             {mode === 'register' && (
@@ -236,12 +229,10 @@ function AuthInner() {
             </button>
           </p>
 
-          {/* Admin note */}
           <div className="flex items-start gap-2.5 bg-neutral-50 border border-neutral-200 px-4 py-3">
             <ShieldCheck size={14} className="text-neutral-400 mt-0.5 shrink-0" />
             <p className="text-[11px] text-neutral-400 leading-snug">
-              Admins can also enter their credentials above to access the admin dashboard.
-              You will be redirected automatically based on your role.
+              Admins sign in here too — you will be redirected automatically based on your role.
             </p>
           </div>
 

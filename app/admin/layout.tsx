@@ -5,6 +5,8 @@ import { AdminSidebar } from '@/components/AdminSidebar';
 import { AdminMobileTopbar } from '@/components/AdminMobileTopbar';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { authService } from '@/services/authService';
+import { Loader2 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,19 +14,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    // Admin is hardcoded — never touch Appwrite
-    if (localStorage.getItem('agrovia:admin') === 'true') {
-      setIsAdmin(true);
-    } else {
-      router.replace('/admin/auth');
-    }
-    setChecking(false);
+    const verify = async () => {
+      try {
+        const user = await authService.getUser();
+        if (user && user.prefs?.role === 'admin') {
+          setIsAdmin(true);
+        } else {
+          router.replace('/auth');
+        }
+      } catch {
+        router.replace('/auth');
+      } finally {
+        setChecking(false);
+      }
+    };
+
+    verify();
   }, [router]);
 
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="w-8 h-8 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+        <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
       </div>
     );
   }
